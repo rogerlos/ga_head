@@ -5,87 +5,58 @@ namespace gahead;
 /**
  * Class Ga_Head
  *
+ * @since   1.3 Added property 'FILTERS'
+ * @since   1.3 Removed method 'set_property'
+ * @since   1.3 Added method 'configuration'
+ * @since   1.0
+ *
  * @package gahead
  */
 class Ga_Head {
 	
 	/**
+	 * @since 1.3 Keys no longer pre-defined
 	 * @since 1.0
-	 * @var array
+	 *
+	 * @var array  Configuration array used by plugin
 	 */
-	protected $GA = [
-		'customizer'  => [],
-		'ga'          => '',
-		'no_tracking' => '',
-		'placeholder' => '',
-	];
+	protected $GA;
+	
+	/**
+	 * @since 1.3
+	 *
+	 * @var bool  Whether to allow plugin to be filtered by "add_filter()"
+	 */
+	protected $FILTERS;
 	
 	/**
 	 * Ga_Head constructor.
 	 *
-	 * @since 1.0
-	 *
-	 * @param array $args
-	 */
-	public function __construct( $args = [] ) {
-		
-		$this->set_property( $args );
-	}
-	
-	/**
-	 * Allows setting an argument
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key
-	 * @param mixed  $args
-	 *
-	 * @return mixed
-	 */
-	public function set_property( $args, $key = '' ) {
-		
-		if ( ! empty( $key ) && isset( $this->GA[ $key ] ) ) {
-			
-			$this->GA[ $key ] = $args;
-			
-		} else if ( ! empty( $args ) && is_array( $args ) ) {
-			
-			foreach ( $args as $key => $val ) {
-				if ( isset( $this->GA[ $key ] ) ) {
-					$this->GA[ $key ] = $val;
-				}
-			}
-		}
-		
-		return $this->GA;
-	}
-	
-	/**
-	 * Adds actions to WP.
-	 *
+	 * @since 1.3 Allows setting of GAHEAD_FILTERS constant to prevent filtering of plugin if set to false
+	 * @since 1.3 No longer accepts configuration array, use filter instead
 	 * @since 1.0
 	 */
-	public function actions() {
+	public function __construct() {
 		
-		add_action( 'customize_register', [ $this, 'customizer' ] );
-		add_action( 'wp_head', [ $this, 'head' ] );
+		$this->FILTERS = defined( 'GAHEAD_FILTERS' ) ? GAHEAD_FILTERS : TRUE;
+		
+		$this->GA = $this->configuration();
 	}
 	
 	/**
 	 * Adds options to customizer from passed arguments array.
 	 *
+	 * @since 1.3 Added test to be sure 'customizer' property is not empty, and is an array
+	 * @since 1.0
+	 *
 	 * @param \WP_Customize_Manager $C
 	 */
 	public function customizer( \WP_Customize_Manager $C ) {
 		
-		$c = $this->GA['customizer'];
+		$c = ! empty( $this->GA['customizer'] ) && is_array( $this->GA['customizer'] ) ? $this->GA['customizer'] : [];
 		
-		if (
-			empty( $c['section'] ) ||
-			empty( $c['field'] ) ||
-			! is_array( $c['section'] ) ||
-			! is_array( $c['field'] )
-		) {
+		if ( empty( $c['section'] ) || empty( $c['field'] ) ||
+		     ! is_array( $c['section'] ) || ! is_array( $c['field'] ) ) {
 			return;
 		}
 		
@@ -138,28 +109,77 @@ class Ga_Head {
 	/**
 	 * Callback to add code to head. Checks user's capability before adding script.
 	 *
+	 * @since 1.3  Added filters
+	 * @since 1.3  Added $echo to allow returning string
 	 * @since 1.2  Stripped all whitespace from script return value
 	 * @since 1.0
+	 *
+	 * @param bool $echo
+	 *
+	 * @return string
 	 */
-	public function head() {
+	public function head( $echo = TRUE ) {
 		
-		if ( empty( $this->GA['no_tracking'] ) || ! current_user_can( $this->GA['no_tracking'] ) ) {
-			
-			$tracker       = get_theme_mod( 'gahead_code', '' );
-			$custom_script = get_theme_mod( 'gahead_snippet', '' );
-			
-			$custom_script = preg_replace('/\s+/', '', $custom_script);
-			
-			$script = $tracker && empty( $custom_script ) ?
-				$this->default_ga_code( $tracker ) : $this->script( $custom_script, $tracker );
-			
+		$script     = '';
+		$notrack    = get_theme_mod( 'gahead_donottrack', '' );
+		$track_code = get_theme_mod( 'gahead_code', '' );
+		
+		$ignore     = $this->FILTERS ? apply_filters( 'gahead_donottrack', $notrack ) : $notrack;
+		$track_code = $this->FILTERS ? apply_filters( 'gahead_trackcode', $track_code ) : $track_code;
+		
+		$add_tracking = $ignore ? ! current_user_can( $ignore ) : TRUE;
+		
+		if ( $add_tracking && $track_code ) {
+			$custom = preg_replace( '/\s+/', '', get_theme_mod( 'gahead_snippet', '' ) );
+			$script = empty( $custom ) ? $this->default_script( $track_code ) : $this->script( $custom, $track_code );
+		}
+		
+		if ( $echo ) {
 			echo $script;
 		}
+		
+		return $script;
 	}
 	
 	/**
-	 * Adds custom script, looking for placeholder token if present.
+	 * Gets the plugin configuration from cfg.json. Adds filter
 	 *
+	 * @since 1.3
+	 *
+	 * @return array
+	 */
+	protected function configuration() {
+		
+		$file      = __DIR__ . '/cfg.json';
+		$json_file = $this->FILTERS ? apply_filters( 'gahead_config_file', $file ) : $file;
+		$cfg       = file_exists( $json_file ) ? json_decode( file_get_contents( $json_file ), TRUE ) : [];
+		$json      = $cfg === NULL ? [] : $cfg;
+		
+		return $this->FILTERS ? apply_filters( 'gahead_config_array', $json ) : $json;
+	}
+	
+	
+	/**
+	 * Google Analytics code. Returns an empty string if $tracker is empty
+	 *
+	 * @since 1.3 Added test for existence of 'ga' property in $this->GA
+	 * @since 1.1 Fixed order of arguments
+	 * @since 1.0
+	 *
+	 * @param string $track_code Google analytics tracking code
+	 *
+	 * @return string
+	 */
+	protected function default_script( $track_code ) {
+		
+		return $track_code && ! empty( $this->GA['ga'] ) ? $this->script( $this->GA['ga'], $track_code ) : '';
+	}
+	
+	/**
+	 * Adds custom script, looking for {{code}} token if present.
+	 *
+	 * @since 1.3 Check $script is a string
+	 * @since 1.3 Added filter
 	 * @since 1.0
 	 *
 	 * @param string $tracker GA tracking number
@@ -167,25 +187,15 @@ class Ga_Head {
 	 *
 	 * @return mixed
 	 */
-	public function script( $script, $tracker = '' ) {
+	protected function script( $script, $tracker = '' ) {
 		
-		$script = strpos( $script, '<script>' ) === FALSE ? '<script>' . $script . '</script>' : $script;
+		if ( is_string( $script ) ) {
+			
+			$script = $this->FILTERS ? apply_filters( 'gahead_rawscript', $script ) : $script;
+			$script = strpos( $script, '<script>' ) === FALSE ? '<script>' . $script . '</script>' : $script;
+			$script = str_replace( '{{code}}', $tracker, $script );
+		}
 		
-		return str_replace( $this->GA['placeholder'], $tracker, $script );
-	}
-	
-	/**
-	 * Google Analytics code.
-	 *
-	 * @since 1.1 Fixed order of arguments
-	 * @since 1.0
-	 *
-	 * @param string $tracker
-	 *
-	 * @return string
-	 */
-	protected function default_ga_code( $tracker ) {
-		
-		return $tracker ? $this->script( $this->GA['ga'], $tracker ) : '';
+		return $this->FILTERS ? apply_filters( 'gahead_script', $script ) : $script;
 	}
 }
