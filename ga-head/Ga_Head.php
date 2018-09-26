@@ -142,7 +142,7 @@ class Ga_Head {
 	}
 	
 	/**
-	 * Gets the plugin configuration from cfg.json. Adds filter
+	 * Gets the plugin configuration from cfg.json. Can be filtered to allow custom configuration
 	 *
 	 * @since 1.3
 	 *
@@ -160,7 +160,7 @@ class Ga_Head {
 	
 	
 	/**
-	 * Google Analytics code. Returns an empty string if $tracker is empty
+	 * Google Analytics javascript. Returns an empty string if $tracker is empty
 	 *
 	 * @since 1.3 Added test for existence of 'ga' property in $this->GA
 	 * @since 1.1 Fixed order of arguments
@@ -189,12 +189,11 @@ class Ga_Head {
 	 */
 	protected function script( $script, $tracker = '' ) {
 		
-		if ( is_string( $script ) ) {
-			
-			$script = $this->FILTERS ? apply_filters( 'gahead_rawscript', $script ) : $script;
-			$script = strpos( $script, '<script>' ) === FALSE ? '<script>' . $script . '</script>' : $script;
-			$script = str_replace( '{{code}}', $tracker, $script );
-		}
+		$script = $this->FILTERS ? apply_filters( 'gahead_rawscript', $script ) : $script;
+		$script = is_string( $script ) ? $script : '';
+		
+		$script = strpos( $script, '<script>' ) === FALSE ? '<script>' . $script . '</script>' : $script;
+		$script = str_replace( '{{code}}', $tracker, $script );
 		
 		return $this->FILTERS ? apply_filters( 'gahead_script', $script ) : $script;
 	}

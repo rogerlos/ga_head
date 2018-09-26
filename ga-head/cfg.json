@@ -3,7 +3,7 @@
     "section" : [
       {
         "id" :    "gahead_ga",
-        "title" : "Google Analytics by GA Head"
+        "title" : "Analytics by GA Head"
       }
     ],
     "field" :   [
@@ -13,7 +13,7 @@
       },
       {
         "id" :          "gahead_snippet",
-        "label" :       "GA JavaScript",
+        "label" :       "Google Analytics JavaScript",
         "type" :        "textarea",
         "description" : "Optional: Default is Google's \"isogram\" script. You can use {{code}} as placeholder for tracking number above, if you enter custom code."
       },
