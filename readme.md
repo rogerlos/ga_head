@@ -49,8 +49,8 @@ is an actual valid GA tracking code! (This will override the setting in the cust
   code is enclosed by `script` tags. (This will override the setting in the customizer.)
 * `add_filter( 'gahead_script', 'your_function_to_modify_final_javascript' )`  
   _String_  
-  Filters the "final" javascript exactly as it will be inserted into the page head. Should include surround script tags
-and display the tracking code.
+  Filters the "final" javascript exactly as it will be inserted into the page head. Should include wrapping `script` 
+  tags and display the tracking code.
  
 ## Installation
  
