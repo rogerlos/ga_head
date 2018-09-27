@@ -1,16 +1,18 @@
 <?php
-
 /**
  * @wordpress-plugin
- * Plugin Name:       Google Analytics in Site Head
+ * Plugin Name:       GA Head
  * Plugin URI:        https://github.com/rogerlos/ga-head
- * Description:       Adds google analytics to head. Configured via customizer.
- * Version:           1.3
+ * Description:       Adds google analytics to your site's html head. Configured via customizer. Extensible by filters.
+ * Version:           1.3.1
  * Author:            Roger Los
  * Author URI:        https://github.com/rogerlos
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       gahead
+ *
+ * @since 1.3.1 Modifications to plugin header.
+ * @since 1.3.1 First version submitted to WP repository.
  */
 
 /**
@@ -30,7 +32,7 @@ include( 'Ga_Head.php' );
 $GA = new \gahead\Ga_Head();
 
 /**
- * Wordpress actions and filters. Plugin does not otherwise modify WP.
+ * WordPress actions and filters. Plugin does not otherwise modify WP.
  *
  * @since 1.3
  */
