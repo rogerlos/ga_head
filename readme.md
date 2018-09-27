@@ -54,7 +54,8 @@ is an actual valid GA tracking code! (This will override the setting in the cust
  
 ## Installation
  
-1. Upload the directory `ga-head` to the `/wp-content/plugins/` directory
+1. Upload the directory `ga-head` to your `plugins` directory, or select `ga-head.zip` by using the "Add New" button
+on the WordPress admin "Plugins" page.
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Add the tracking code you acquired from Google by opening the Customizer and finding the "Google Analytics" section
  
