@@ -37,7 +37,7 @@ on the WordPress admin "Plugins" page.
 
 == Changelog ==
 
-= 1.3 =
+= 1.3.1 =
 * First version in public repository
 
 = 1.0 =

@@ -61,6 +61,9 @@ on the WordPress admin "Plugins" page.
  
 ## Changelog
 
+#### 1.3.1
+* Plugin header changes.
+
 #### 1.3
 * First version in public repository
 
