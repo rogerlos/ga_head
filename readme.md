@@ -8,7 +8,7 @@ want administrators use of the site to affect your analytics, for example.
 Options are set from within the Customizer. Look for the "Google Analytics by GA Head" section. You must at least
 enter the tracking code for your website (as provided to you by Google) for the plugin to work!
 
-### For Developers
+## For Developers
 
 GA Head can be called directly via a helper function, which may be useful if you do not call `wp_head()` in your
 theme's code:

@@ -21,7 +21,26 @@ want administrators use of the site to affect your analytics, for example.
 Options are set from within the Customizer. Look for the "Google Analytics by GA Head" section. You must at least
 enter the tracking code for your website (as provided to you by Google) for the plugin to work!
 
-#### For Developers
+== Installation ==
+
+1. Upload the directory `ga-head` to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Add the tracking code you acquired from Google by opening the Customizer and finding the "Google Analytics" section
+
+== Changelog ==
+
+= 1.3 =
+* First version in public repository
+
+= 1.0 =
+* Initial release
+
+== Support ==
+
+If possible, please open an issue at the [github issue tracker](https://github.com/rogerlos/ga_head) for speedier
+resolutions to any issues. Note I do not provide general Google Analytics support.
+
+== For Developers ==
 
 GA Head can be called directly via a helper function, which may be useful if you do not call `wp_head()` in your
 theme's code:
@@ -64,21 +83,3 @@ is enclosed by `script` tags is done. (This will override the setting in the cus
   _String_
   Filters the "final" javascript exactly as it will be inserted into the page head. Should include surround script tags
 and display the tracking code.
-
-== Installation ==
-
-1. Upload the directory `ga-head` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Add the tracking code you acquired from Google by opening the Customizer and finding the "Google Analytics" section
-
-== Changelog ==
-
-= 1.3 =
-* First version in public repository
-
-= 1.0 =
-* Initial release
-
-== Support ==
-
-If possible, please open an issue at the [github issue tracker](https://github.com/rogerlos/ga_head).
