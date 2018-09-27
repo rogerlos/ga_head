@@ -15,19 +15,18 @@ GA Head adds Google Analytics to your site's head, as recommended by Google. Con
 
 GA Head adds Google Analytics code to your site's html head, as recommended by Google.
 
-All you have to do is add your Analytics tracking code, and you're set!
+All you have to do is add your Analytics tracking code via the Customizer, and you're set!
 
-There are a couple of additional options:
+Additional options:
 
 * Add a WordPress capability to keep users who have that capability from being tracked...handy if you don't want
 Site Administrator's use of the site added to your google data, for example.
 * Use your own custom JavaScript instead of the standard Google "isogram" code.
 
-Options are set from within the Customizer. Look for the "Google Analytics by GA Head" section.
-
 If you are a developer, please see the plugin's [Github repository](https://github.com/rogerlos/ga_head)
 for additional documentation. GA Head provides filters for nearly every internal method it uses, allowing much more
-sophisticated tracking to meet your requirements.
+sophisticated tracking to meet your requirements. There is also a helper function for use when your templates do not
+call `wp_head()`;
 
 == Installation ==
 
